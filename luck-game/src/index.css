@@ -25,6 +25,21 @@
   --border-width: 10px;
 }
 
+.App {
+  display: grid;
+  place-items: center;
+  grid-gap: var(--tile-size) var(--tile-size);
+  grid-template-columns: max-content;
+  grid-template-rows: 100px var(--grid-height) 100px;
+  grid-template-areas: "h"
+                       "c"
+                       "b";
+}
+
+.App-header {
+  grid-area: h;
+}
+
 /* Colors */
 .color-0 {
   background-color: var(--color-0);
@@ -58,6 +73,7 @@
   grid-template-columns: repeat(var(--cols), var(--tile-size));
   grid-gap: 0;
   align-self: flex-start;
+  grid-area: c;
 }
 
 /* controls */
@@ -82,3 +98,4 @@
   border-right-color: var(--button-color-r);
   border-bottom-color: var(--button-color-b);
 }
+

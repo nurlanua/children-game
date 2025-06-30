@@ -9,3 +9,11 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* vertical centering */
+  align-items: center;       /* horizontal centering */
+  text-align: center;
+}
