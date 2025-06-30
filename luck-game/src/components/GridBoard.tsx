@@ -1,52 +1,70 @@
 import React from 'react'
 import GridSquare from './GridSquare'
 
-// Represents a 10 x 10 grid of grid squares
+const maxRows = 10;
+const maxCols = 10;
 
 export default function GridBoard() {
+  const numberGrid: number[][] = [];
+  const visited: boolean[][] = Array.from({ length: maxRows }, () => Array(maxCols).fill(false));
 
-  // generates an array of 10 rows, each containing 10 GridSquares.
-    const rows = 10;
-    const cols = 10;
+  const randomInt = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
 
-    const numberGrid: number[][] = []
-    const randomInt = (min: number, max: number) =>
-        Math.floor(Math.random() * (max - min + 1)) + min;
-    
-    for (let row = 0; row < rows; row ++) {
-        const rowArray: number[] = [];
-        for (let col = 0; col < cols; col ++) {
-            rowArray.push(randomInt(0,4));
-        }
-        numberGrid.push(rowArray);
+  // Generate grid of random numbers
+  for (let row = 0; row < maxRows; row++) {
+    const rowArray: number[] = [];
+    for (let col = 0; col < maxCols; col++) {
+      rowArray.push(randomInt(0, 4));
+    }
+    numberGrid.push(rowArray);
+  }
+
+  const targetNumber = numberGrid[0][0];
+
+  // Flood fill function to mark matching squares
+  function floodFill(row: number, col: number) {
+    if (
+      row < 0 || row >= maxRows ||
+      col < 0 || col >= maxCols ||
+      visited[row][col] ||
+      numberGrid[row][col] !== targetNumber
+    ) {
+      return;
     }
 
-    const targetNumber = numberGrid[0][0];
-    const grid: JSX.Element[][] = [];
+    visited[row][col] = true;
 
-    for (let row = 0; row < rows; row++){
-        grid.push([]);
-        for (let col = 0; col < cols; col++){
-            const currentNumber = numberGrid[row][col];
+    floodFill(row + 1, col); // down
+    floodFill(row - 1, col); // up
+    floodFill(row, col + 1); // right
+    floodFill(row, col - 1); // left
+  }
 
-            const isTarget = (row === 0 && col === 0) ||
-                (row === 1 && col === 0 && numberGrid[row][col] === targetNumber) || // bottom
-                (row === 0 && col === 1 && numberGrid[row][col] === targetNumber);   // right
+  // Start flood fill from top-left
+  floodFill(0, 0);
 
-            const color = isTarget ? "1":"0";
+  // Render grid
+  const grid: JSX.Element[][] = [];
+  for (let row = 0; row < maxRows; row++) {
+    grid.push([]);
+    for (let col = 0; col < maxCols; col++) {
+      const currentNumber = numberGrid[row][col];
+      const color = visited[row][col] ? "1" : "0";
 
-            grid[row].push(
-                <GridSquare
-                  key={`${col}${row}}`}
-                  color={color}
-                  number={currentNumber}
-                  />
-            );
-        }
+      grid[row].push(
+        <GridSquare
+          key={`${col}${row}`}
+          color={color}
+          number={currentNumber}
+        />
+      );
     }
-    return (
-        <div className='grid-board'>
-            {grid}
-        </div>
-    )
+  }
+
+  return (
+    <div className='grid-board'>
+      {grid}
+    </div>
+  );
 }
