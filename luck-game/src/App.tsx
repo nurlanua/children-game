@@ -11,7 +11,6 @@ function App() {
         <h1 className="App-title">Luck Game Redux</h1>
       </header>
       <GridBoard />
-      <Controls />
     </div>
   );
 }

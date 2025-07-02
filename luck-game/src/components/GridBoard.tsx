@@ -1,60 +1,98 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import GridSquare from './GridSquare'
+import Controls from './Controls'
 
 const maxRows = 10;
 const maxCols = 10;
 
 export default function GridBoard() {
-  const numberGrid: number[][] = [];
-  const visited: boolean[][] = Array.from({ length: maxRows }, () => Array(maxCols).fill(false));
+  const [numberGrid, setNumberGrid] = useState<number[][]>([]);
+  const [targetNumber, setTargetNumber] = useState<number>(0);
+  const [visited, setVisited] = useState<boolean[][]>([]);
+  const [hasWon, setHasWon] = useState<boolean>(false);
 
-  const randomInt = (min: number, max: number) =>
-    Math.floor(Math.random() * (max - min + 1)) + min;
-
-  // Generate grid of random numbers
-  for (let row = 0; row < maxRows; row++) {
-    const rowArray: number[] = [];
-    for (let col = 0; col < maxCols; col++) {
-      rowArray.push(randomInt(0, 4));
-    }
-    numberGrid.push(rowArray);
-  }
-
-  const targetNumber = numberGrid[0][0];
-
-  // Flood fill function to mark matching squares
-  function floodFill(row: number, col: number) {
-    if (
-      row < 0 || row >= maxRows ||
-      col < 0 || col >= maxCols ||
-      visited[row][col] ||
-      numberGrid[row][col] !== targetNumber
-    ) {
-      return;
+  // generate grid when component mounts
+  useEffect(() => {
+    const grid: number[][] = [];
+    for (let row = 0; row < maxRows; row++) {
+      const rowArray: number[] = [];
+      for (let col = 0; col < maxCols; col++) {
+        rowArray.push(Math.floor(Math.random() * 5));
+      }
+      grid.push(rowArray);
     }
 
-    visited[row][col] = true;
+    const startValue = grid[0][0];
+    setNumberGrid(grid);
+    setTargetNumber(grid[0][0]);
+    setVisited(floodFill(grid, startValue));
+  }, []);
 
-    floodFill(row + 1, col); // down
-    floodFill(row - 1, col); // up
-    floodFill(row, col + 1); // right
-    floodFill(row, col - 1); // left
+  // flood fill function
+  function floodFill(grid: number[][], startValue: number): boolean[][] {
+    const visited = Array.from({ length: maxRows }, () =>
+      Array(maxCols).fill(false)
+    );
+
+    function fill(r: number, c: number) {
+      if (
+        r < 0 || r >= maxRows ||
+        c < 0 || c >= maxCols ||
+        visited[r][c] ||
+        grid[r][c] !== startValue
+      ) return;
+
+      visited[r][c] = true;
+
+      fill(r + 1, c);
+      fill(r - 1, c);
+      fill(r, c + 1);
+      fill(r, c - 1);
+    }
+
+    fill(0, 0);
+    return visited;
   }
 
-  // Start flood fill from top-left
-  floodFill(0, 0);
 
-  // Render grid
-  const grid: JSX.Element[][] = [];
+  function checkWin(grid: number[][]): boolean {
+    const value = grid[0][0];
+    return grid.every(row => row.every(cell => cell === value));
+  }
+
+  // update target number
+  const handleChange = (newNum: number) => {
+    if (numberGrid.length === 0) return;
+
+    const newGrid = numberGrid.map(row => [...row]);
+    for (let r = 0; r < maxRows; r++){
+      for (let c = 0; c < maxCols; c++){
+        if (visited[r][c]) {
+          newGrid[r][c] = newNum;
+        }
+      }
+    }
+    setNumberGrid(newGrid);
+    setTargetNumber(newNum);
+    setVisited(floodFill(newGrid, newNum));
+
+    if (checkWin(newGrid)) {
+      setHasWon(true);
+    }
+  };
+
+  // render grid
+  const grid: JSX.Element[] = [];
+
   for (let row = 0; row < maxRows; row++) {
-    grid.push([]);
     for (let col = 0; col < maxCols; col++) {
-      const currentNumber = numberGrid[row][col];
-      const color = visited[row][col] ? "1" : "0";
+      const currentNumber = numberGrid[row]?.[col] ?? 0;
+      const isVisited = visited[row]?.[col];
+      const color = isVisited ? "1" : "0";
 
-      grid[row].push(
+      grid.push(
         <GridSquare
-          key={`${col}${row}`}
+          key={`${row}-${col}`}
           color={color}
           number={currentNumber}
         />
@@ -63,8 +101,16 @@ export default function GridBoard() {
   }
 
   return (
-    <div className='grid-board'>
-      {grid}
+    <div className="App">
+      <div className="grid-board">
+        {grid}
+      </div>
+      <Controls onChange={handleChange} />
+      {hasWon && (
+        <div className="popup">
+          You won!
+        </div>
+      )}
     </div>
   );
 }
