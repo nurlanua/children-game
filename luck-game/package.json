@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist -r https://github.com/nurlanua/children-game.git"
   },
   "dependencies": {
     "react": "^18.2.0",
