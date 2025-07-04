@@ -9,4 +9,8 @@ I took a lot of inspiration and code from a guide on How to build a [Tetris Game
 2. Press on the big buttons below the grid numbered from 0 to 4. This will change all the highlighted as green to the number pressed.
 3. The goal is to make the whole grid the same number.
 
+### To run the game [click here](https://nurlanua.github.io/children-game/luck-game/)
+
+
+
  
