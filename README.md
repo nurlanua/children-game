@@ -11,6 +11,15 @@ I took a lot of inspiration and code from a guide on How to build a [Tetris Game
 
 ### To run the game [click here](https://nurlanua.github.io/children-game/luck-game/)
 
+### Python version
+1. Download the folder python-version
+2. Open a terminal
+3. Run the command below in a folder that contains luck-game.py
+```
+$python3 luck-game.py
+```
+
+PS: if you can't run it, probably you don't have python installed on your device
 
 
  
