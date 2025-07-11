@@ -51,13 +51,16 @@ while not checkWin():
         number = input("please choose a number between 0 and 4: ")
         try:
             number = int(number)
+            if number >= rang or number < 0:
+                raise ValueError
             error = False
         except ValueError:
             print("please try again")
 
     prev = array[0][0]
-    array[0][0] = number
-    recursive(prev, 0, 0)
+    if prev != number:
+        array[0][0] = number
+        recursive(prev, 0, 0)
     show()
 
 
